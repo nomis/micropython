@@ -90,6 +90,10 @@
 // Any options not explicitly set in mpconfigport.h will get default
 // values below.
 
+#ifndef MICROPY_INSTANCE_PER_THREAD
+#define MICROPY_INSTANCE_PER_THREAD (0)
+#endif
+
 /*****************************************************************************/
 /* Object representation                                                     */
 
@@ -1442,6 +1446,10 @@ typedef double mp_float_t;
 #define MICROPY_PY_THREAD (0)
 #endif
 
+#if MICROPY_INSTANCE_PER_THREAD && MICROPY_PY_THREAD
+#error "Can't support threads when using a separate instance per thread"
+#endif
+
 // Whether to make the VM/runtime thread-safe using a global lock
 // If not enabled then thread safety must be provided at the Python level
 #ifndef MICROPY_PY_THREAD_GIL
@@ -1820,6 +1828,20 @@ typedef double mp_float_t;
 #define INT_FMT "%d"
 #endif
 #endif // INT_FMT
+
+// Modifier for variable which must be per thread
+#if MICROPY_INSTANCE_PER_THREAD
+# define MP_IPT __thread
+#else
+# define MP_IPT
+#endif
+
+// Modifier for variable which must be const when not per thread
+#if MICROPY_INSTANCE_PER_THREAD
+# define MP_IPT_OR_CONST __thread
+#else
+# define MP_IPT_OR_CONST const
+#endif
 
 // Modifier for function which doesn't return
 #ifndef NORETURN

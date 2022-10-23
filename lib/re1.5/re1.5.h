@@ -108,8 +108,6 @@ enum	/* Inst.opcode */
 Prog *compile(Regexp*);
 void printprog(Prog*);
 
-extern int gen;
-
 enum {
 	MAXSUB = 20
 };

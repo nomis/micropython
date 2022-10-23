@@ -31,7 +31,11 @@
 // Place at the very end of a module's globals_table.
 #define MP_MODULE_ATTR_DELEGATION_ENTRY(ptr) { MP_ROM_QSTR(MP_QSTRnull), MP_ROM_PTR(ptr) }
 
-extern const mp_map_t mp_builtin_module_map;
+extern MP_IPT_OR_CONST mp_map_t mp_builtin_module_map;
+
+#if MICROPY_INSTANCE_PER_THREAD
+void mp_module_new_thread_init(const mp_obj_module_t *find, mp_obj_module_t *replace);
+#endif
 
 mp_obj_t mp_module_get_loaded_or_builtin(qstr module_name);
 #if MICROPY_MODULE_WEAK_LINKS

@@ -58,7 +58,7 @@ typedef struct mp_dynamic_compiler_t {
     uint8_t native_arch;
     uint8_t nlr_buf_num_regs;
 } mp_dynamic_compiler_t;
-extern mp_dynamic_compiler_t mp_dynamic_compiler;
+extern MP_IPT mp_dynamic_compiler_t mp_dynamic_compiler;
 #endif
 
 // These are the values for sched_state
@@ -320,7 +320,7 @@ typedef struct _mp_state_ctx_t {
     mp_state_mem_t mem;
 } mp_state_ctx_t;
 
-extern mp_state_ctx_t mp_state_ctx;
+extern MP_IPT mp_state_ctx_t mp_state_ctx;
 
 #define MP_STATE_VM(x) (mp_state_ctx.vm.x)
 #define MP_STATE_MEM(x) (mp_state_ctx.mem.x)

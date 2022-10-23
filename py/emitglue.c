@@ -48,7 +48,7 @@
 #endif
 
 #if MICROPY_DEBUG_PRINTERS
-mp_uint_t mp_verbose_flag = 0;
+MP_IPT mp_uint_t mp_verbose_flag = 0;
 #endif
 
 mp_raw_code_t *mp_emit_glue_new_raw_code(void) {

@@ -44,6 +44,7 @@
 #include "py/builtin.h"
 #include "py/stackctrl.h"
 #include "py/gc.h"
+#include "shared/runtime/interrupt_char.h"
 
 #if MICROPY_DEBUG_VERBOSE // print debugging info
 #define DEBUG_PRINT (1)
@@ -54,14 +55,36 @@
 #define DEBUG_OP_printf(...) (void)0
 #endif
 
+#if MICROPY_INSTANCE_PER_THREAD
+MP_IPT mp_obj_module_t mp_module___main__per_thread;
+#endif
+
 const mp_obj_module_t mp_module___main__ = {
     .base = { &mp_type_module },
+#if MICROPY_INSTANCE_PER_THREAD
+    .globals = NULL,
+#else
     .globals = (mp_obj_dict_t *)&MP_STATE_VM(dict_main),
+#endif
 };
 
 MP_REGISTER_MODULE(MP_QSTR___main__, mp_module___main__);
 
 void mp_init(void) {
+#if MICROPY_INSTANCE_PER_THREAD
+    /*
+     * Can't use the address of a __thread variable at compile time,
+     * so set it at runtime instead by swapping out the const version.
+     */
+    memcpy(&mp_module___main__per_thread, &mp_module___main__, sizeof(mp_module___main__));
+
+    mp_module___main__per_thread.globals = (mp_obj_dict_t *)&MP_STATE_VM(dict_main);
+
+    mp_module_new_thread_init(&mp_module___main__, &mp_module___main__per_thread);
+
+    mp_hal_set_interrupt_char(-1);
+#endif
+
     qstr_init();
 
     // no pending exceptions to start with

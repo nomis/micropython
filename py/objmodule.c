@@ -164,12 +164,42 @@ mp_obj_t mp_obj_new_module(qstr module_name) {
 /******************************************************************************/
 // Global module table and related functions
 
+#if MICROPY_INSTANCE_PER_THREAD
+STATIC const mp_rom_map_elem_t mp_builtin_module_table__const[] = {
+    // builtin modules declared with MP_REGISTER_MODULE()
+    MICROPY_REGISTERED_MODULES
+};
+
+STATIC MP_DEFINE_CONST_MAP(mp_builtin_module_map__const, mp_builtin_module_table__const);
+
+STATIC MP_IPT mp_rom_map_elem_t mp_builtin_module_table[MP_ARRAY_SIZE(mp_builtin_module_table__const)];
+
+MP_IPT mp_map_t mp_builtin_module_map;
+
+void mp_module_new_thread_init(const mp_obj_module_t *find, mp_obj_module_t *replace) {
+    /*
+     * Can't use the address of a __thread variable at compile time,
+     * so set it at runtime instead by copying the const version.
+     */
+    memcpy(&mp_builtin_module_table, &mp_builtin_module_table__const, sizeof(mp_builtin_module_table));
+    memcpy(&mp_builtin_module_map, &mp_builtin_module_map__const, sizeof(mp_builtin_module_map));
+
+    mp_builtin_module_map.table = (mp_map_elem_t *)(mp_rom_map_elem_t *)mp_builtin_module_table;
+
+    for (size_t i = 0; i < MP_ARRAY_SIZE(mp_builtin_module_table); i++) {
+        if (MP_OBJ_TO_PTR(mp_builtin_module_table[i].value) == find) {
+            mp_builtin_module_table[i].value = MP_OBJ_FROM_PTR(replace);
+        }
+    }
+}
+#else
 STATIC const mp_rom_map_elem_t mp_builtin_module_table[] = {
     // builtin modules declared with MP_REGISTER_MODULE()
     MICROPY_REGISTERED_MODULES
 };
 
 MP_DEFINE_CONST_MAP(mp_builtin_module_map, mp_builtin_module_table);
+#endif
 
 // Tries to find a loaded module, otherwise attempts to load a builtin, otherwise MP_OBJ_NULL.
 mp_obj_t mp_module_get_loaded_or_builtin(qstr module_name) {

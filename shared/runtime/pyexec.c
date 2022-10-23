@@ -41,13 +41,14 @@
 #endif
 #include "shared/readline/readline.h"
 #include "shared/runtime/pyexec.h"
+#include "shared/runtime/interrupt_char.h"
 #include "genhdr/mpversion.h"
 
-pyexec_mode_kind_t pyexec_mode_kind = PYEXEC_MODE_FRIENDLY_REPL;
-int pyexec_system_exit = 0;
+MP_IPT pyexec_mode_kind_t pyexec_mode_kind = PYEXEC_MODE_FRIENDLY_REPL;
+MP_IPT int pyexec_system_exit = 0;
 
 #if MICROPY_REPL_INFO
-STATIC bool repl_display_debugging_info = 0;
+STATIC MP_IPT bool repl_display_debugging_info = 0;
 #endif
 
 #define EXEC_FLAG_PRINT_EOF             (1 << 0)
@@ -289,7 +290,7 @@ typedef struct _repl_t {
     bool paste_mode;
 } repl_t;
 
-repl_t repl;
+MP_IPT repl_t repl;
 
 STATIC int pyexec_raw_repl_process_char(int c);
 STATIC int pyexec_friendly_repl_process_char(int c);
@@ -475,7 +476,7 @@ STATIC int pyexec_friendly_repl_process_char(int c) {
     }
 }
 
-uint8_t pyexec_repl_active;
+MP_IPT uint8_t pyexec_repl_active;
 int pyexec_event_repl_process_char(int c) {
     pyexec_repl_active = 1;
     int res;
@@ -552,6 +553,8 @@ raw_repl_reset:
 int pyexec_friendly_repl(void) {
     vstr_t line;
     vstr_init(&line, 32);
+
+    pyexec_mode_kind = PYEXEC_MODE_FRIENDLY_REPL;
 
 friendly_repl_reset:
     mp_hal_stdout_tx_str(MICROPY_BANNER_NAME_AND_VERSION);

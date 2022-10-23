@@ -230,7 +230,7 @@ void vstr_vprintf(vstr_t *vstr, const char *fmt, va_list ap);
 // Debugging helpers
 int DEBUG_printf(const char *fmt, ...);
 
-extern mp_uint_t mp_verbose_flag;
+extern MP_IPT mp_uint_t mp_verbose_flag;
 
 /** float internals *************/
 

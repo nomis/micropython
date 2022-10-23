@@ -104,7 +104,7 @@ typedef struct _readline_t {
     const char *prompt;
 } readline_t;
 
-STATIC readline_t rl;
+STATIC MP_IPT readline_t rl;
 
 #if MICROPY_REPL_EMACS_WORDS_MOVE
 STATIC size_t cursor_count_word(int forward) {

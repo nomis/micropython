@@ -31,6 +31,7 @@
 #include "py/runtime.h"
 #include "py/gc.h"
 #include "py/mphal.h"
+#include "shared/runtime/interrupt_char.h"
 
 // Various builtins specific to MicroPython runtime,
 // living in micropython module
