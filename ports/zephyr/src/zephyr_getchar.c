@@ -20,7 +20,6 @@
 #include <sys/printk.h>
 #include "zephyr_getchar.h"
 
-extern int mp_interrupt_char;
 void mp_sched_keyboard_interrupt(void);
 void mp_hal_signal_event(void);
 void mp_hal_wait_sem(struct k_sem *sem, uint32_t timeout_ms);

@@ -33,7 +33,6 @@
 
 #define SYSTICK_MAX (0xffffff)
 
-extern int mp_interrupt_char;
 extern ringbuf_t stdin_ringbuf;
 
 void mp_hal_set_interrupt_char(int c);

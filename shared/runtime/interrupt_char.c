@@ -24,14 +24,15 @@
  * THE SOFTWARE.
  */
 
+#include "interrupt_char.h"
 #include "py/obj.h"
 #include "py/mpstate.h"
 
 #if MICROPY_KBD_EXCEPTION
 
-MP_IPT int mp_interrupt_char = -1;
+MP_IPT int16_t mp_interrupt_char = -1;
 
-void mp_hal_set_interrupt_char(int c) {
+void mp_hal_set_interrupt_char(int16_t c) {
     mp_interrupt_char = c;
 }
 

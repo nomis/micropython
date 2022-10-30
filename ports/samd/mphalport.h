@@ -32,7 +32,6 @@
 // ASF4
 #include "hal_gpio.h"
 
-extern int mp_interrupt_char;
 extern ringbuf_t stdin_ringbuf;
 extern volatile uint32_t systick_ms;
 

@@ -28,7 +28,7 @@
 
 #include "py/obj.h"
 
-typedef enum {
+typedef enum __attribute__ ((__packed__)) {
     PYEXEC_MODE_FRIENDLY_REPL,
     PYEXEC_MODE_RAW_REPL,
 } pyexec_mode_kind_t;
@@ -38,7 +38,7 @@ extern MP_IPT pyexec_mode_kind_t pyexec_mode_kind;
 // Set this to the value (eg PYEXEC_FORCED_EXIT) that will be propagated through
 // the pyexec functions if a SystemExit exception is raised by the running code.
 // It will reset to 0 at the start of each execution (eg each REPL entry).
-extern MP_IPT int pyexec_system_exit;
+extern MP_IPT int8_t pyexec_system_exit;
 
 #define PYEXEC_FORCED_EXIT (0x100)
 
