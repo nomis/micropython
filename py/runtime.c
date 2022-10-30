@@ -61,17 +61,17 @@ MP_IPT mp_obj_module_t mp_module___main__per_thread;
 
 const mp_obj_module_t mp_module___main__ = {
     .base = { &mp_type_module },
-#if MICROPY_INSTANCE_PER_THREAD
+    #if MICROPY_INSTANCE_PER_THREAD
     .globals = NULL,
-#else
+    #else
     .globals = (mp_obj_dict_t *)&MP_STATE_VM(dict_main),
-#endif
+    #endif
 };
 
 MP_REGISTER_MODULE(MP_QSTR___main__, mp_module___main__);
 
 void mp_init(void) {
-#if MICROPY_INSTANCE_PER_THREAD
+    #if MICROPY_INSTANCE_PER_THREAD
     /*
      * Can't use the address of a __thread variable at compile time,
      * so set it at runtime instead by swapping out the const version.
@@ -80,10 +80,10 @@ void mp_init(void) {
 
     mp_module___main__per_thread.globals = (mp_obj_dict_t *)&MP_STATE_VM(dict_main);
 
-    mp_module_new_thread_init(&mp_module___main__, &mp_module___main__per_thread);
+    mp_module_thread_init(&mp_module___main__, &mp_module___main__per_thread);
 
     mp_hal_set_interrupt_char(-1);
-#endif
+    #endif
 
     qstr_init();
 
@@ -202,6 +202,10 @@ void mp_init(void) {
 
 void mp_deinit(void) {
     MP_THREAD_GIL_EXIT();
+
+    #if MICROPY_INSTANCE_PER_THREAD
+    mp_module_thread_free();
+    #endif
 
     // call port specific deinitialization if any
     #ifdef MICROPY_PORT_DEINIT_FUNC

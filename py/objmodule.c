@@ -172,26 +172,57 @@ STATIC const mp_rom_map_elem_t mp_builtin_module_table__const[] = {
 
 STATIC MP_DEFINE_CONST_MAP(mp_builtin_module_map__const, mp_builtin_module_table__const);
 
-STATIC MP_IPT mp_rom_map_elem_t mp_builtin_module_table[MP_ARRAY_SIZE(mp_builtin_module_table__const)];
+STATIC MP_IPT mp_rom_map_elem_t *mp_builtin_module_table__thread;
+MP_IPT mp_map_t *mp_builtin_module_map__thread;
 
-MP_IPT mp_map_t mp_builtin_module_map;
+STATIC const mp_rom_map_elem_t mp_builtin_module_table__empty[] = {};
+STATIC MP_DEFINE_CONST_MAP(mp_builtin_module_map__empty, mp_builtin_module_table__empty);
 
-void mp_module_new_thread_init(const mp_obj_module_t *find, mp_obj_module_t *replace) {
+void mp_module_thread_init(const mp_obj_module_t *find, mp_obj_module_t *replace) {
     /*
      * Can't use the address of a __thread variable at compile time,
      * so set it at runtime instead by copying the const version.
      */
-    memcpy(&mp_builtin_module_table, &mp_builtin_module_table__const, sizeof(mp_builtin_module_table));
-    memcpy(&mp_builtin_module_map, &mp_builtin_module_map__const, sizeof(mp_builtin_module_map));
+    mp_builtin_module_map__thread = malloc(sizeof(mp_builtin_module_map__const));
+    mp_builtin_module_table__thread = malloc(sizeof(mp_builtin_module_table__const));
 
-    mp_builtin_module_map.table = (mp_map_elem_t *)(mp_rom_map_elem_t *)mp_builtin_module_table;
+    if (!mp_builtin_module_map__thread || !mp_builtin_module_table__thread) {
+        mp_module_thread_free();
+        nlr_jump_fail((void *)0xBAAAAAAD);
+    }
 
-    for (size_t i = 0; i < MP_ARRAY_SIZE(mp_builtin_module_table); i++) {
-        if (MP_OBJ_TO_PTR(mp_builtin_module_table[i].value) == find) {
-            mp_builtin_module_table[i].value = MP_OBJ_FROM_PTR(replace);
+    memcpy(mp_builtin_module_map__thread, &mp_builtin_module_map__const, sizeof(mp_builtin_module_map__const));
+    memcpy(mp_builtin_module_table__thread, &mp_builtin_module_table__const, sizeof(mp_builtin_module_table__const));
+
+    mp_builtin_module_map__thread->table = (mp_map_elem_t *)(mp_rom_map_elem_t *)mp_builtin_module_table__thread;
+
+    for (size_t i = 0; i < MP_ARRAY_SIZE(mp_builtin_module_table__const); i++) {
+        if (MP_OBJ_TO_PTR(mp_builtin_module_table__thread[i].value) == find) {
+            mp_builtin_module_table__thread[i].value = MP_OBJ_FROM_PTR(replace);
+            return;
         }
     }
+
+    mp_module_thread_free();
+    nlr_jump_fail((void *)0xBAADF00D);
 }
+
+void mp_module_thread_free(void) {
+    if (mp_builtin_module_table__thread) {
+        memset(mp_builtin_module_table__thread, 0, sizeof(mp_builtin_module_table__const));
+        free(mp_builtin_module_table__thread);
+        mp_builtin_module_table__thread = NULL;
+    }
+
+    if (mp_builtin_module_map__thread) {
+        memset(mp_builtin_module_map__thread, 0, sizeof(mp_builtin_module_map__const));
+        free(mp_builtin_module_map__thread);
+        mp_builtin_module_map__thread = NULL;
+    }
+}
+
+#define mp_builtin_module_map (*mp_builtin_module_map__thread)
+#define mp_builtin_module_table (*mp_builtin_module_table__thread)
 #else
 STATIC const mp_rom_map_elem_t mp_builtin_module_table[] = {
     // builtin modules declared with MP_REGISTER_MODULE()

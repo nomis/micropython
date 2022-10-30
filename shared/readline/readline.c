@@ -104,7 +104,12 @@ typedef struct _readline_t {
     const char *prompt;
 } readline_t;
 
-STATIC MP_IPT readline_t rl;
+#if MICROPY_INSTANCE_PER_THREAD
+STATIC MP_IPT readline_t *rl_thread_state;
+#define rl (*rl_thread_state)
+#else
+STATIC readline_t rl;
+#endif
 
 #if MICROPY_REPL_EMACS_WORDS_MOVE
 STATIC size_t cursor_count_word(int forward) {
@@ -552,14 +557,27 @@ void readline_init(vstr_t *line, const char *prompt) {
 }
 
 int readline(vstr_t *line, const char *prompt) {
+    #if MICROPY_INSTANCE_PER_THREAD
+    readline_t rl_stack_state;
+
+    rl_thread_state = &rl_stack_state;
+    #endif
+
     readline_init(line, prompt);
     for (;;) {
         int c = mp_hal_stdin_rx_chr();
         int r = readline_process_char(c);
         if (r >= 0) {
+            #if MICROPY_INSTANCE_PER_THREAD
+            rl_thread_state = NULL;
+            #endif
             return r;
         }
     }
+
+    #if MICROPY_INSTANCE_PER_THREAD
+    rl_thread_state = NULL;
+    #endif
 }
 
 void readline_push_history(const char *line) {

@@ -320,17 +320,33 @@ typedef struct _mp_state_ctx_t {
     mp_state_mem_t mem;
 } mp_state_ctx_t;
 
-extern MP_IPT mp_state_ctx_t mp_state_ctx;
+#if MICROPY_INSTANCE_PER_THREAD
+extern MP_IPT mp_state_ctx_t *mp_state_ctx;
+
+#define MP_STATE_VM(x) (mp_state_ctx->vm.x)
+#define MP_STATE_MEM(x) (mp_state_ctx->mem.x)
+#define MP_STATE_MAIN_THREAD(x) (mp_state_ctx->thread.x)
+#else
+extern mp_state_ctx_t mp_state_ctx;
 
 #define MP_STATE_VM(x) (mp_state_ctx.vm.x)
 #define MP_STATE_MEM(x) (mp_state_ctx.mem.x)
 #define MP_STATE_MAIN_THREAD(x) (mp_state_ctx.thread.x)
+#endif
 
 #if MICROPY_PY_THREAD
 extern mp_state_thread_t *mp_thread_get_state(void);
 #define MP_STATE_THREAD(x) (mp_thread_get_state()->x)
 #else
 #define MP_STATE_THREAD(x)  MP_STATE_MAIN_THREAD(x)
+#endif
+
+#if MICROPY_INSTANCE_PER_THREAD
+int mp_state_init(void);
+void mp_state_free(void);
+#else
+static inline int mp_state_init(void) { return 0; }
+static inline void mp_state_free(void) {}
 #endif
 
 #endif // MICROPY_INCLUDED_PY_MPSTATE_H

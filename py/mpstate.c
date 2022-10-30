@@ -26,8 +26,34 @@
 
 #include "py/mpstate.h"
 
+#include <stdlib.h>
+
 #if MICROPY_DYNAMIC_COMPILER
 MP_IPT mp_dynamic_compiler_t mp_dynamic_compiler = {0};
 #endif
 
-MP_IPT mp_state_ctx_t mp_state_ctx;
+#if MICROPY_INSTANCE_PER_THREAD
+MP_IPT mp_state_ctx_t *mp_state_ctx;
+#else
+mp_state_ctx_t mp_state_ctx;
+#endif
+
+#if MICROPY_INSTANCE_PER_THREAD
+int mp_state_init(void) {
+    mp_state_ctx = malloc(sizeof(*mp_state_ctx));
+    if (!mp_state_ctx)
+        return -1;
+
+    memset(mp_state_ctx, 0, sizeof(*mp_state_ctx));
+    return 0;
+}
+
+void mp_state_free(void) {
+    if (!mp_state_ctx)
+        return;
+
+    memset(mp_state_ctx, 0, sizeof(*mp_state_ctx));
+    free(mp_state_ctx);
+    mp_state_ctx = NULL;
+}
+#endif
