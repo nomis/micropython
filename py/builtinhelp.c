@@ -78,7 +78,7 @@ STATIC void mp_help_add_from_names(mp_obj_t list, const char *name) {
 STATIC void mp_help_print_modules(void) {
     mp_obj_t list = mp_obj_new_list(0, NULL);
 
-    mp_help_add_from_map(list, &mp_builtin_module_map);
+    mp_help_add_from_map(list, MP_BUILTIN_MODULE_MAP);
 
     #if MICROPY_MODULE_FROZEN
     extern const char mp_frozen_names[];
