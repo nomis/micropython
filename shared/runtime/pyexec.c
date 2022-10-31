@@ -45,7 +45,7 @@
 #include "genhdr/mpversion.h"
 
 MP_IPT pyexec_mode_kind_t pyexec_mode_kind = PYEXEC_MODE_FRIENDLY_REPL;
-MP_IPT int8_t pyexec_system_exit = 0;
+MP_IPT int16_t pyexec_system_exit = 0;
 
 #if MICROPY_REPL_INFO
 STATIC MP_IPT bool repl_display_debugging_info = 0;
