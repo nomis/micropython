@@ -321,11 +321,11 @@ typedef struct _mp_state_ctx_t {
 } mp_state_ctx_t;
 
 #if MICROPY_INSTANCE_PER_THREAD
-extern MP_IPT mp_state_ctx_t *mp_state_ctx;
+extern MP_IPT mp_state_ctx_t *mp_state_ctx_thread;
 
-#define MP_STATE_VM(x) (mp_state_ctx->vm.x)
-#define MP_STATE_MEM(x) (mp_state_ctx->mem.x)
-#define MP_STATE_MAIN_THREAD(x) (mp_state_ctx->thread.x)
+#define MP_STATE_VM(x) (mp_state_ctx_thread->vm.x)
+#define MP_STATE_MEM(x) (mp_state_ctx_thread->mem.x)
+#define MP_STATE_MAIN_THREAD(x) (mp_state_ctx_thread->thread.x)
 #else
 extern mp_state_ctx_t mp_state_ctx;
 
