@@ -262,6 +262,7 @@ STATIC void mp_reader_new_stdin(mp_reader_t *reader, mp_reader_stdin_t *reader_s
 }
 
 STATIC int do_reader_stdin(int c) {
+    #if MICROPY_REPL_SUPPORT_RAW_PASTE
     if (c != 'A') {
         // Unsupported command.
         mp_hal_stdout_tx_strn("R\x00", 2);
@@ -276,6 +277,11 @@ STATIC int do_reader_stdin(int c) {
     mp_reader_new_stdin(&reader, &reader_stdin, MICROPY_REPL_STDIN_BUFFER_MAX);
     int exec_flags = EXEC_FLAG_PRINT_EOF | EXEC_FLAG_SOURCE_IS_READER;
     return parse_compile_execute(&reader, MP_PARSE_FILE_INPUT, exec_flags);
+    #else
+    // Unsupported command.
+    mp_hal_stdout_tx_strn("R\x00", 2);
+    return 0;
+    #endif
 }
 
 #if MICROPY_REPL_EVENT_DRIVEN

@@ -703,6 +703,11 @@
 #define MICROPY_REPL_EVENT_DRIVEN (0)
 #endif
 
+// Whether or not REPL raw paste is supported
+#ifndef MICROPY_REPL_SUPPORT_RAW_PASTE
+#define MICROPY_REPL_SUPPORT_RAW_PASTE (1)
+#endif
+
 // Whether to include lexer helper function for unix
 #ifndef MICROPY_HELPER_LEXER_UNIX
 #define MICROPY_HELPER_LEXER_UNIX (0)
