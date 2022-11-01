@@ -120,11 +120,11 @@ MP_DECLARE_CONST_FUN_OBJ_2(mp_op_getitem_obj);
 MP_DECLARE_CONST_FUN_OBJ_3(mp_op_setitem_obj);
 MP_DECLARE_CONST_FUN_OBJ_2(mp_op_delitem_obj);
 
-extern const mp_obj_module_t mp_module___main__;
 #if MICROPY_INSTANCE_PER_THREAD
 extern MP_IPT mp_obj_module_t mp_module___main__per_thread;
 #define MP_MODULE___MAIN__ mp_module___main__per_thread
 #else
+extern const mp_obj_module_t mp_module___main__;
 #define MP_MODULE___MAIN__ mp_module___main__
 #endif
 extern const mp_obj_module_t mp_module_builtins;
