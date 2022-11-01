@@ -1831,14 +1831,14 @@ typedef double mp_float_t;
 
 // Modifier for variable which must be per thread
 #if MICROPY_INSTANCE_PER_THREAD
-# define MP_IPT _Thread_local
+# define MP_IPT __thread
 #else
 # define MP_IPT
 #endif
 
 // Modifier for variable which must be const when not per thread
 #if MICROPY_INSTANCE_PER_THREAD
-# define MP_IPT_OR_CONST _Thread_local
+# define MP_IPT_OR_CONST __thread
 #else
 # define MP_IPT_OR_CONST const
 #endif
