@@ -106,7 +106,10 @@ typedef struct _readline_t {
 
 #if MICROPY_INSTANCE_PER_THREAD
 STATIC MP_IPT readline_t *rl_thread_state;
-#define rl (*rl_thread_state)
+# define rl (*rl_thread_state)
+# if MICROPY_REPL_AUTO_INDENT
+static MP_IPT uint8_t auto_indent_thread_state;
+# endif
 #else
 STATIC readline_t rl;
 #endif
@@ -551,6 +554,10 @@ void readline_init(vstr_t *line, const char *prompt) {
     if (vstr_len(line) == 0) {
         // start with auto-indent enabled
         rl.auto_indent_state = AUTO_INDENT_ENABLED;
+    # if MICROPY_INSTANCE_PER_THREAD
+    } else {
+        rl.auto_indent_state = auto_indent_thread_state;
+    # endif
     }
     readline_auto_indent();
     #endif
@@ -576,6 +583,9 @@ int readline(vstr_t *line, const char *prompt) {
     }
 
     #if MICROPY_INSTANCE_PER_THREAD
+    # if MICROPY_REPL_AUTO_INDENT
+    auto_indent_thread_state = rl.auto_indent_state;
+    # endif
     rl_thread_state = NULL;
     #endif
 }
