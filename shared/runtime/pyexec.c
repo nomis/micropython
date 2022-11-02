@@ -553,6 +553,7 @@ raw_repl_reset:
         if (ret & PYEXEC_FORCED_EXIT) {
             return ret;
         }
+        MP_STATE_VM(cur_exception) = NULL;
     }
 }
 
@@ -680,6 +681,7 @@ friendly_repl_reset:
         if (ret & PYEXEC_FORCED_EXIT) {
             return ret;
         }
+        MP_STATE_VM(cur_exception) = NULL;
     }
 }
 
