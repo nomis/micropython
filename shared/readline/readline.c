@@ -576,18 +576,14 @@ int readline(vstr_t *line, const char *prompt) {
         int r = readline_process_char(c);
         if (r >= 0) {
             #if MICROPY_INSTANCE_PER_THREAD
+            # if MICROPY_REPL_AUTO_INDENT
+            auto_indent_thread_state = rl.auto_indent_state;
+            # endif
             rl_thread_state = NULL;
             #endif
             return r;
         }
     }
-
-    #if MICROPY_INSTANCE_PER_THREAD
-    # if MICROPY_REPL_AUTO_INDENT
-    auto_indent_thread_state = rl.auto_indent_state;
-    # endif
-    rl_thread_state = NULL;
-    #endif
 }
 
 void readline_push_history(const char *line) {
