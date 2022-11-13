@@ -182,25 +182,11 @@ void mp_hal_delay_us(uint32_t us) {
     }
 }
 
-int32_t mp_hal_time_s(void) {
+uint64_t mp_hal_time_ns(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    int32_t seconds = tv.tv_sec;
-    #if !MICROPY_EPOCH_IS_1970
-    seconds = (uint32_t)seconds - TIMEUTILS_SECONDS_1970_TO_2000;
-    #endif
-    return seconds;
-}
-
-int64_t mp_hal_time_ns(void) {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    int32_t seconds = tv.tv_sec;
-    #if !MICROPY_EPOCH_IS_1970
-    seconds = (uint32_t)seconds - TIMEUTILS_SECONDS_1970_TO_2000;
-    #endif
-    int64_t ns = seconds * 1000000000LL;
-    ns += tv.tv_usec * 1000LL;
+    uint64_t ns = tv.tv_sec * 1000000000ULL;
+    ns += (uint64_t)tv.tv_usec * 1000ULL;
     return ns;
 }
 
