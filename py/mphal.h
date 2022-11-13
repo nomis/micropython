@@ -77,7 +77,7 @@ mp_uint_t mp_hal_ticks_cpu(void);
 
 #ifndef mp_hal_time_ns
 // Nanoseconds since the Epoch.
-uint64_t mp_hal_time_ns(void);
+int64_t mp_hal_time_ns(void);
 #endif
 
 // If port HAL didn't define its own pin API, use generic
